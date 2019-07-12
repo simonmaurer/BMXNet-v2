@@ -151,7 +151,7 @@ def check_params(use_bias, activation):
 
 
 class QActivation(HybridBlock):
-    def __init__(self, *args, bits=None, gradient_cancel_threshold=None, method=None, **kwargs):
+    def __init__(self, bits=None, gradient_cancel_threshold=None, method=None, *args, **kwargs):
         super(QActivation, self).__init__(*args, **kwargs)
         self.quantize = binary_layer_config.get_activation_function(bits=bits, method=method)
         self.threshold = gradient_cancel_threshold or binary_layer_config.grad_cancel
@@ -163,9 +163,9 @@ class QActivation(HybridBlock):
 
 
 class QDense(Dense):
-    def __init__(self, *args, bits=None, activation=None, use_bias=False, **kwargs):
+    def __init__(self, bits=None, activation=None, use_bias=False, *args, **kwargs):
         check_params(use_bias, activation)
-        super(QDense, self).__init__(*args, activation=None, use_bias=False, **kwargs)
+        super(QDense, self).__init__(activation=None, use_bias=False, *args, **kwargs)
         self._offset = 0
         self.quantize = binary_layer_config.get_weight_quantization_function(bits=bits)
         self.method = binary_layer_config.activation
