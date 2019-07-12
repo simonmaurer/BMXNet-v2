@@ -6,6 +6,8 @@ from .conv_layers import _Conv
 from ...base import numeric_types
 from ...symbol import Symbol
 
+from sys import version_info
+
 
 class BinaryLayerConfig:
     def __init__(self, grad_cancel=1.0, bits=1, bits_a=1, activation='det_sign',
@@ -197,7 +199,10 @@ class _QConv(_Conv):
         self.weight.wd_mult = 0.0
         self.scaling = apply_scaling
         self.stop_weight_scale_grad = binary_layer_config.approximation == "xnor"
-        self._scaling_transpose = (1, 0, *range(2, len(kernel_size) + 2))
+        if version_info >= (3,5):
+            self._scaling_transpose = (1, 0, *range(2, len(kernel_size) + 2))
+        else:
+            self._scaling_transpose = (1, 0) + tuple(range(2, len(kernel_size) + 2))
         self.bits = bits or binary_layer_config.bits
         self.quantize = binary_layer_config.get_weight_quantization_function(bits=self.bits, method=quantization)
 
